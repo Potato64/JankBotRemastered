@@ -23,13 +23,13 @@ public class Arm {
 
     public Arm (DcMotor lift, DcMotor extend, DigitalChannel liftLimitSwitch, DigitalChannel extendLimitSwitch,
                 Servo leftHopper, Servo rightHopper, Servo tiltHopper,
-                Servo latchRelease)
+                Servo latchRelease, DcMotor winch)
     {
         this.lift = lift;
         this.extend = extend;
 
         hopper = new Hopper(leftHopper, rightHopper, tiltHopper);
-        latch = new Latch(latchRelease);
+        latch = new Latch(latchRelease, winch);
     }
 
     public void setLiftMode(DcMotor.RunMode mode)
