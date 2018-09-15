@@ -6,11 +6,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class Arm {
 
-//    private final double liftLowerLimit = 0;
-//    private final double liftUpperLimit = 500;
-//
-//    private final double extendLowerLimit = 0;
-//    private final double extendUpperLimit = 1000;
+    private final double liftLowerLimit = 0;
+    private final double liftUpperLimit = 500;
+
+    private final double extendLowerLimit = 0;
+    private final double extendUpperLimit = 1000;
+
+    private boolean isZeroed = false;
 
     private DcMotor lift;
     private DcMotor extend;
@@ -18,8 +20,8 @@ public class Arm {
     private DigitalChannel liftLimitSwitch;
     private DigitalChannel extendLimitSwitch;
 
-    private Hopper hopper;
-    private Latch latch;
+    public Hopper hopper;
+    public Latch latch;
 
     public Arm (DcMotor lift, DcMotor extend, DigitalChannel liftLimitSwitch, DigitalChannel extendLimitSwitch,
                 Servo leftHopper, Servo rightHopper, Servo tiltHopper,
@@ -39,13 +41,22 @@ public class Arm {
 
     public void setLiftPower(double power)
     {
-        lift.setPower(power);
+        int currentPosition = lift.getCurrentPosition();
+        if (power >= 0 && currentPosition <= liftUpperLimit ||
+                power <= 0 && currentPosition >= liftLowerLimit &&
+                isZeroed)
+        {
+            lift.setPower(power);
+        }
     }
 
     public void setLiftPosition(int position)
     {
-        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        lift.setTargetPosition(position);
+        if (position >= liftLowerLimit && position <= liftUpperLimit && isZeroed)
+        {
+            lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            lift.setTargetPosition(position);
+        }
     }
 
     public void setExtendMode(DcMotor.RunMode mode)
@@ -55,12 +66,76 @@ public class Arm {
 
     public void setExtendPower(double power)
     {
-        extend.setPower(power);
+        int currentPosition = extend.getCurrentPosition();
+        if (power >= 0 && currentPosition <= extendUpperLimit ||
+                power <= 0 && currentPosition >= extendLowerLimit &&
+                isZeroed)
+        {
+            extend.setPower(power);
+        }
     }
 
-    public void setExtendPostion(int postion)
+    public void setExtendPostion(int position)
     {
-        extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        extend.setTargetPosition(postion);
+        if (position >= extendLowerLimit && position <= extendUpperLimit && isZeroed)
+        {
+            extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            extend.setTargetPosition(position);
+        }
+    }
+
+    public void descend()
+    {
+        lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        extend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        latch.release();
+
+        lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        extend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
+    public void zeroEncoders()
+    {
+        long startTime = System.currentTimeMillis();
+
+        boolean liftLimit;
+        boolean extendLimit;
+
+        do
+        {
+            liftLimit = liftLimitSwitch.getState();
+            extendLimit = extendLimitSwitch.getState();
+
+            if (liftLimit)
+            {
+                lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            }
+            else
+            {
+                lift.setPower(-0.5);
+            }
+
+            if (extendLimit)
+            {
+                extend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                extend.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            }
+            else
+            {
+                extend.setPower(-0.5);
+            }
+
+            if (System.currentTimeMillis() - startTime >= 4500)
+            {
+                break;
+            }
+        } while (!liftLimit || !extendLimit);
+
+        if (liftLimit && extendLimit)
+        {
+            isZeroed = true;
+        }
     }
 }

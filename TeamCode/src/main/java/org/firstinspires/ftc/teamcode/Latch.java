@@ -27,17 +27,23 @@ public class Latch {
 
     public void release()
     {
-        releaseServo.setPosition(0);
+
+        winch.setTargetPosition(unwoundTicks);
+        winch.setPower(0.5);
+
         try
         {
-            sleep(500);
+            sleep(2000);
         }
         catch (InterruptedException e)
         {
             e.printStackTrace();
         }
-        winch.setTargetPosition(unwoundTicks);
-        winch.setPower(0.5);
+
+        if (!winch.isBusy())
+        {
+            releaseServo.setPosition(0);
+        }
     }
 
     public void unrelease()
