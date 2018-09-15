@@ -27,7 +27,6 @@ public class Latch {
 
     public void release()
     {
-
         winch.setTargetPosition(unwoundTicks);
         winch.setPower(0.5);
 

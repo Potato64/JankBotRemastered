@@ -1,10 +1,14 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="TeleOP", group="Iterative Opmode")
@@ -22,7 +26,19 @@ public class JankBot_TeleOP extends OpMode
      * Code to run ONCE when the driver hits INIT
      */
     @Override
-    public void init() {
+    public void init()
+    {
+        arm = new Arm(hardwareMap.get(DcMotor.class, "lift"), hardwareMap.get(DcMotor.class, "extend"),
+                hardwareMap.get(DigitalChannel.class, "liftLimit"), hardwareMap.get(DigitalChannel.class, "extendLimit"),
+                hardwareMap.get(Servo.class, "leftHopper"), hardwareMap.get(Servo.class, "rightHopper"), hardwareMap.get(Servo.class, "tiltHoper"),
+                hardwareMap.get(Servo.class, "latchRelease"), hardwareMap.get(DcMotor.class, "winch"));
+
+        base = new DriveBase(hardwareMap.get(DcMotor.class, "left1"), hardwareMap.get(DcMotor.class, "left1"),
+                hardwareMap.get(DcMotor.class, "right1"), hardwareMap.get(DcMotor.class, "right2"),
+                hardwareMap.get(BNO055IMU.class, "imu"));
+
+        pixy = hardwareMap.get(I2cDeviceSynch.class, "pixy");
+
         telemetry.addData("Status", "Initialized");
     }
 
@@ -46,6 +62,7 @@ public class JankBot_TeleOP extends OpMode
      */
     @Override
     public void loop() {
+
     }
 
     /*

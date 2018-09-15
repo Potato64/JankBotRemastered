@@ -38,7 +38,13 @@ public class DriveBase {
         right1.setDirection(DcMotorSimple.Direction.REVERSE);
         right2.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
+
         this.imu = imu;
+        imu.initialize(parameters);
     }
 
     public double getHeading()

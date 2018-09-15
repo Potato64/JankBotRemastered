@@ -23,12 +23,17 @@ public class Arm {
     public Hopper hopper;
     public Latch latch;
 
+    public Thread zeroThread;
+
     public Arm (DcMotor lift, DcMotor extend, DigitalChannel liftLimitSwitch, DigitalChannel extendLimitSwitch,
                 Servo leftHopper, Servo rightHopper, Servo tiltHopper,
                 Servo latchRelease, DcMotor winch)
     {
         this.lift = lift;
         this.extend = extend;
+
+        this.liftLimitSwitch = liftLimitSwitch;
+        this.extendLimitSwitch = extendLimitSwitch;
 
         hopper = new Hopper(leftHopper, rightHopper, tiltHopper);
         latch = new Latch(latchRelease, winch);
@@ -97,45 +102,60 @@ public class Arm {
 
     public void zeroEncoders()
     {
-        long startTime = System.currentTimeMillis();
-
-        boolean liftLimit;
-        boolean extendLimit;
-
-        do
-        {
-            liftLimit = liftLimitSwitch.getState();
-            extendLimit = extendLimitSwitch.getState();
-
-            if (liftLimit)
+        Runnable zeroRunnable = new Runnable() {
+            @Override
+            public void run()
             {
-                lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            }
-            else
-            {
-                lift.setPower(-0.5);
-            }
+                {
+                    long startTime = System.currentTimeMillis();
 
-            if (extendLimit)
-            {
-                extend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                extend.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            }
-            else
-            {
-                extend.setPower(-0.5);
-            }
+                    boolean liftLimit;
+                    boolean extendLimit;
 
-            if (System.currentTimeMillis() - startTime >= 4500)
-            {
-                break;
-            }
-        } while (!liftLimit || !extendLimit);
+                    do
+                    {
+                        liftLimit = liftLimitSwitch.getState();
+                        extendLimit = extendLimitSwitch.getState();
 
-        if (liftLimit && extendLimit)
-        {
-            isZeroed = true;
-        }
+                        if (!liftLimit)
+                        {
+                            lift.setPower(-0.5);
+                        }
+                        else
+                        {
+                            lift.setPower(0);
+                        }
+
+                        if (extendLimit)
+                        {
+                            extend.setPower(-0.5);
+                        }
+                        else
+                        {
+                            extend.setPower(0);
+                        }
+
+                        if (System.currentTimeMillis() - startTime >= 4500)
+                        {
+                            break;
+                        }
+                    } while (!liftLimit || !extendLimit);
+
+                    if (liftLimit && extendLimit)
+                    {
+                        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+                        extend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        extend.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+                        isZeroed = true;
+                    }
+                }
+            }
+        };
+
+        zeroThread = new Thread(zeroRunnable);
+        zeroThread.start();
     }
 }
