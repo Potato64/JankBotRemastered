@@ -101,6 +101,7 @@ public class Arm {
 
     public void descend()
     {
+        //motors are floated so they don't interfere with descent
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         extend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
@@ -112,6 +113,7 @@ public class Arm {
 
     public void zero()
     {
+        //this creates its own thread so that it can be stopped with the OpMode
         Runnable zeroRunnable = new Runnable() {
             @Override
             public void run()

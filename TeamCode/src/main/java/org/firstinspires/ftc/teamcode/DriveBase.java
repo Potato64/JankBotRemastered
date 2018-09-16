@@ -72,6 +72,9 @@ public class DriveBase {
             targetHeading = getHeading();
         }
 
+        //does not actually change any sort of motor power directly,
+        //but adjusts the target angle and lets the angle correction
+        //of update() sort it out
         adjustHeading(speed);
 
         this.rotSpeed = speed;
@@ -84,12 +87,14 @@ public class DriveBase {
 
     public void update()
     {
+        //adjusts motor powers in order to maintain the correct heading
         double error = getHeading() - targetHeading;
         double powerChange = error * rotKP;// + error * KI;
 
         double leftPower = speed + powerChange;
         double rightPower = speed - powerChange;
 
+        //keeps maximum power at or below 1, as to keep the proportions correct.
         double maxPower = Math.abs(speed) + Math.abs(powerChange);
         if (maxPower > 1)
         {
@@ -103,6 +108,7 @@ public class DriveBase {
         right1.setPower(rightPower);
         right2.setPower(rightPower);
 
+        //if drivebase is supposed to keep rotating, adjust the target heading appropriately
         if (rotSpeed != 0)
         {
             adjustHeading(rotSpeed);
