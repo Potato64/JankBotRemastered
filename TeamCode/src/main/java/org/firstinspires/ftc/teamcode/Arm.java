@@ -6,11 +6,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class Arm {
 
-    private final double liftLowerLimit = 0;
-    private final double liftUpperLimit = 500;
+    //TODO find actual limits
+    private final int LIFT_LOWER_LIMIT = 0;
+    private final int LIFT_UPPER_LIMIT = 500;
 
-    private final double extendLowerLimit = 0;
-    private final double extendUpperLimit = 1000;
+    //TODO find actual limits
+    private final int EXTEND_LOWER_LIMIT = 0;
+    private final int EXTEND_UPPER_LIMIT = 1000;
 
     private boolean isZeroed = false;
 
@@ -24,6 +26,7 @@ public class Arm {
     public Latch latch;
 
     public Thread zeroThread;
+    private boolean cancel = false;
 
     public Arm (DcMotor lift, DcMotor extend, DigitalChannel liftLimitSwitch, DigitalChannel extendLimitSwitch,
                 Servo leftHopper, Servo rightHopper, Servo tiltHopper,
@@ -47,8 +50,8 @@ public class Arm {
     public void setLiftPower(double power)
     {
         int currentPosition = lift.getCurrentPosition();
-        if (power >= 0 && currentPosition <= liftUpperLimit ||
-                power <= 0 && currentPosition >= liftLowerLimit &&
+        if (power >= 0 && currentPosition <= LIFT_UPPER_LIMIT ||
+                power <= 0 && currentPosition >= LIFT_LOWER_LIMIT &&
                 isZeroed)
         {
             lift.setPower(power);
@@ -57,7 +60,7 @@ public class Arm {
 
     public void setLiftPosition(int position)
     {
-        if (position >= liftLowerLimit && position <= liftUpperLimit && isZeroed)
+        if (position >= LIFT_LOWER_LIMIT && position <= LIFT_UPPER_LIMIT && isZeroed)
         {
             lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             lift.setTargetPosition(position);
@@ -72,8 +75,8 @@ public class Arm {
     public void setExtendPower(double power)
     {
         int currentPosition = extend.getCurrentPosition();
-        if (power >= 0 && currentPosition <= extendUpperLimit ||
-                power <= 0 && currentPosition >= extendLowerLimit &&
+        if (power >= 0 && currentPosition <= EXTEND_UPPER_LIMIT ||
+                power <= 0 && currentPosition >= EXTEND_LOWER_LIMIT &&
                 isZeroed)
         {
             extend.setPower(power);
@@ -82,11 +85,18 @@ public class Arm {
 
     public void setExtendPostion(int position)
     {
-        if (position >= extendLowerLimit && position <= extendUpperLimit && isZeroed)
+        if (position >= EXTEND_LOWER_LIMIT && position <= EXTEND_UPPER_LIMIT && isZeroed)
         {
             extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             extend.setTargetPosition(position);
         }
+    }
+
+    public void liftToScore()
+    {
+        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lift.setTargetPosition(LIFT_UPPER_LIMIT);
+        lift.setPower(0.5);
     }
 
     public void descend()
@@ -100,17 +110,17 @@ public class Arm {
         extend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    public void zeroEncoders()
+    public void zero()
     {
         Runnable zeroRunnable = new Runnable() {
             @Override
             public void run()
             {
                 {
-                    long startTime = System.currentTimeMillis();
-
                     boolean liftLimit;
                     boolean extendLimit;
+
+
 
                     do
                     {
@@ -135,13 +145,13 @@ public class Arm {
                             extend.setPower(0);
                         }
 
-                        if (System.currentTimeMillis() - startTime >= 4500)
+                        if (cancel)
                         {
                             break;
                         }
                     } while (!liftLimit || !extendLimit);
 
-                    if (liftLimit && extendLimit)
+                    if (!cancel)
                     {
                         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                         lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -157,5 +167,10 @@ public class Arm {
 
         zeroThread = new Thread(zeroRunnable);
         zeroThread.start();
+    }
+
+    public void cancelZero()
+    {
+        cancel = true;
     }
 }

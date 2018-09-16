@@ -53,7 +53,10 @@ public class JankBot_TeleOP extends OpMode
      * Code to run ONCE when the driver hits PLAY
      */
     @Override
-    public void start() {
+    public void start()
+    {
+        arm.zero();
+        while(arm.zeroThread.isAlive());
         runtime.reset();
     }
 
@@ -61,7 +64,8 @@ public class JankBot_TeleOP extends OpMode
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
      */
     @Override
-    public void loop() {
+    public void loop()
+    {
 
     }
 
@@ -70,6 +74,10 @@ public class JankBot_TeleOP extends OpMode
      */
     @Override
     public void stop() {
+        if (arm.zeroThread.isAlive())
+        {
+            arm.cancelZero();
+        }
     }
 
 }

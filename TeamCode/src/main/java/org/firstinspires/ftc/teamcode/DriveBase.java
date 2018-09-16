@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 public class DriveBase {
 
-    private final double KP = 0.02;
+    private final double rotKP = 0.02;
 //    private final double KI = 0.001;
 //
 //    private double accum = 0;
@@ -67,10 +67,12 @@ public class DriveBase {
 
     public void setRotSpeed(double speed)
     {
-        if (this.rotSpeed > 0 && speed == 0)
+        if (rotSpeed != 0 && speed == 0)
         {
             targetHeading = getHeading();
         }
+
+        adjustHeading(speed);
 
         this.rotSpeed = speed;
     }
@@ -82,39 +84,33 @@ public class DriveBase {
 
     public void update()
     {
-        double leftPower;
-        double rightPower;
+        double error = getHeading() - targetHeading;
+        double powerChange = error * rotKP;// + error * KI;
 
+        double leftPower = speed + powerChange;
+        double rightPower = speed - powerChange;
 
-        if (rotSpeed != 0)
+        double maxPower = Math.abs(speed) + Math.abs(powerChange);
+        if (maxPower > 1)
         {
-            leftPower = speed + rotSpeed;
-            rightPower = speed - rotSpeed;
-
-            double maxPower = Math.abs(speed) + Math.abs(rotSpeed);
-            if (maxPower > 1) {
-                leftPower /= maxPower;
-                rightPower /= maxPower;
-            }
+            leftPower /= maxPower;
+            rightPower /= maxPower;
         }
-        else
-        {
-            double error = getHeading() - targetHeading;
-            double powerChange = error * KP;// + error * KI;
 
-            leftPower = speed + powerChange;
-            rightPower = speed - powerChange;
-
-            double maxPower = Math.abs(speed) + Math.abs(powerChange);
-            if (maxPower > 1) {
-                leftPower /= maxPower;
-                rightPower /= maxPower;
-            }
-        }
 
         left1.setPower(leftPower);
         left2.setPower(leftPower);
         right1.setPower(rightPower);
         right2.setPower(rightPower);
+
+        if (rotSpeed != 0)
+        {
+            adjustHeading(rotSpeed);
+        }
+    }
+
+    private void adjustHeading(double speed)
+    {
+        targetHeading -= speed * 1 / rotKP;
     }
 }
