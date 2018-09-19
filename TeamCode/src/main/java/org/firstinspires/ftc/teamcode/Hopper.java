@@ -2,14 +2,13 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.Servo;
 
-public class Hopper {
-
-    private final double leftOpenLimit = 0;
-    private final double leftClosedLimit = 1;
-    private final double rightOpenLimit = 0;
-    private final double rightClosedLimit = 1;
-    private final double tiltLowerLimit = 0;
-    private final double tiltupperLimit = 1;
+public class Hopper
+{
+    //TODO find actual limits
+    private final double OPEN_LIMIT = 0;
+    private final double CLOSED_LIMIT = 1;
+    private final double TILT_LOWER_LIMIT = 0;
+    private final double TILT_UPPER_LIMIT = 1;
 
     private Servo left;
     private Servo right;
@@ -21,9 +20,9 @@ public class Hopper {
         this.right = right;
         this.tilt = tilt;
 
-        this.left.scaleRange(leftOpenLimit, leftClosedLimit);
-        this.right.scaleRange(rightOpenLimit, rightClosedLimit);
-        this.tilt.scaleRange(tiltLowerLimit, tiltupperLimit);
+        this.left.scaleRange(OPEN_LIMIT, CLOSED_LIMIT);
+        this.right.scaleRange(OPEN_LIMIT, CLOSED_LIMIT);
+        this.tilt.scaleRange(TILT_LOWER_LIMIT, TILT_UPPER_LIMIT);
 
         this.right.setDirection(Servo.Direction.REVERSE);
     }

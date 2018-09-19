@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -23,6 +24,7 @@ public class Arm {
     private DigitalChannel extendLimitSwitch;
 
     public Hopper hopper;
+    public Intake intake;
     public Latch latch;
 
     public Thread zeroThread;
@@ -30,6 +32,7 @@ public class Arm {
 
     public Arm (DcMotor lift, DcMotor extend, DigitalChannel liftLimitSwitch, DigitalChannel extendLimitSwitch,
                 Servo leftHopper, Servo rightHopper, Servo tiltHopper,
+                CRServo leftWheelIntake, CRServo rightWheelIntake, Servo leftDeployIntake, Servo rightDeployIntake,
                 Servo latchRelease, DcMotor winch)
     {
         this.lift = lift;
@@ -39,6 +42,7 @@ public class Arm {
         this.extendLimitSwitch = extendLimitSwitch;
 
         hopper = new Hopper(leftHopper, rightHopper, tiltHopper);
+        intake = new Intake(leftWheelIntake, rightWheelIntake, leftDeployIntake, rightDeployIntake);
         latch = new Latch(latchRelease, winch);
     }
 

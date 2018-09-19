@@ -12,14 +12,14 @@ public class Latch {
 
     private final int unwoundTicks = 5000;
 
-    private Servo releaseServo;
+    private Servo release;
 
     private DcMotor winch;
 
-    public Latch(Servo releaseServo, DcMotor winch)
+    public Latch(Servo release, DcMotor winch)
     {
-        this.releaseServo = releaseServo;
-        this.releaseServo.scaleRange(openLimit, closedLimit);
+        this.release = release;
+        this.release.scaleRange(openLimit, closedLimit);
 
         this.winch = winch;
         winch.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -41,13 +41,13 @@ public class Latch {
 
         if (!winch.isBusy())
         {
-            releaseServo.setPosition(0);
+            release.setPosition(0);
         }
     }
 
     public void unrelease()
     {
-        releaseServo.setPosition(1);
+        release.setPosition(1);
     }
 
     public void climb()
