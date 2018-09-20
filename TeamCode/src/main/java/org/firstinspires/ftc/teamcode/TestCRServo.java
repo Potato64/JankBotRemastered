@@ -32,12 +32,14 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="TestCRServo", group="Iterative Opmode")
 public class TestCRServo extends OpMode
 {
     CRServo servo;
+    CRServo servo2;
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -49,6 +51,9 @@ public class TestCRServo extends OpMode
     public void init()
     {
         servo = hardwareMap.get(CRServo.class, "servo");
+        servo2 = hardwareMap.get(CRServo.class, "servo2");
+
+        servo.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -78,7 +83,17 @@ public class TestCRServo extends OpMode
     @Override
     public void loop()
     {
-        servo.setPower(-gamepad1.left_stick_y);
+        if (gamepad1.a)
+        {
+            servo.setPower(-1);
+            servo2.setPower(-1);
+        }
+        else
+        {
+            servo.setPower(1);
+            servo2.setPower(1);
+        }
+
 
         telemetry.addData("Power: ", servo.getPower());
     }
