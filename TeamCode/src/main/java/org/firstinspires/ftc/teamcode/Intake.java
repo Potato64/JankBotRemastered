@@ -55,4 +55,9 @@ public class Intake
         leftDeploy.setPosition(0);
         rightDeploy.setPosition(0);
     }
+
+    public boolean isDeployed()
+    {
+        return leftDeploy.getPosition() > 0.5;
+    }
 }

@@ -103,6 +103,20 @@ public class Arm {
         lift.setPower(0.5);
     }
 
+    public void ascend()
+    {
+        intake.undeploy();
+
+        //motors are floated so they don't interfere with descent
+        lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        extend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        latch.unrelease();
+
+        lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        extend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
     public void descend()
     {
         //motors are floated so they don't interfere with descent
