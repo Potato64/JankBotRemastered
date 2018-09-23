@@ -23,7 +23,7 @@ public class Arm {
     private DigitalChannel liftLimitSwitch;
     private DigitalChannel extendLimitSwitch;
 
-    public Hopper hopper;
+    //public Hopper hopper;
     public Intake intake;
     public Latch latch;
 
@@ -41,7 +41,7 @@ public class Arm {
         this.liftLimitSwitch = liftLimitSwitch;
         this.extendLimitSwitch = extendLimitSwitch;
 
-        hopper = new Hopper(leftHopper, rightHopper, tiltHopper);
+        //hopper = new Hopper(leftHopper, rightHopper, tiltHopper);
         intake = new Intake(leftWheelIntake, rightWheelIntake, leftDeployIntake, rightDeployIntake);
         latch = new Latch(latchRelease, winch);
     }
