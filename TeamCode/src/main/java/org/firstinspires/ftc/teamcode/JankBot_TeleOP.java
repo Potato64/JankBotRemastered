@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -18,8 +17,11 @@ public class JankBot_TeleOP extends OpMode
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
 
+    DriveOperator driveOperator;
+    MechOperator mechOperator;
+
     private Arm arm;
-    private DriveBase base;
+    private DriveBase driveBase;
 
     private I2cDeviceSynch pixy;
 
@@ -29,6 +31,9 @@ public class JankBot_TeleOP extends OpMode
     @Override
     public void init()
     {
+        driveOperator = new DriveGage(gamepad1);
+        mechOperator = new MechAidan(gamepad2);
+
         arm = new Arm(hardwareMap.get(DcMotor.class, "lift"), hardwareMap.get(DcMotor.class, "extend"),
                 hardwareMap.get(DigitalChannel.class, "liftLimit"), hardwareMap.get(DigitalChannel.class, "extendLimit"),
                 hardwareMap.get(Servo.class, "leftHopper"), hardwareMap.get(Servo.class, "rightHopper"), hardwareMap.get(Servo.class, "tiltHoper"),
@@ -36,7 +41,7 @@ public class JankBot_TeleOP extends OpMode
                 hardwareMap.get(Servo.class, "leftDeployIntake"), hardwareMap.get(Servo.class, "rightDeployIntake"),
                 hardwareMap.get(Servo.class, "releaseLatch"), hardwareMap.get(DcMotor.class, "winchLatch"));
 
-        base = new DriveBase(hardwareMap.get(DcMotor.class, "left1"), hardwareMap.get(DcMotor.class, "left1"),
+        driveBase = new DriveBase(hardwareMap.get(DcMotor.class, "left1"), hardwareMap.get(DcMotor.class, "left1"),
                 hardwareMap.get(DcMotor.class, "right1"), hardwareMap.get(DcMotor.class, "right2"),
                 hardwareMap.get(BNO055IMU.class, "imu"));
 
@@ -69,7 +74,50 @@ public class JankBot_TeleOP extends OpMode
     @Override
     public void loop()
     {
+        driveBase.setSpeed(driveOperator.speed());
+        driveBase.setRotSpeed(driveOperator.rotSpeed());
 
+        if (driveOperator.climb())
+        {
+            arm.ascend();
+        }
+
+        arm.setLiftPosition(mechOperator.liftPosition());
+        arm.setExtendPostion(mechOperator.extendPosition());
+
+        if (mechOperator.toggleStateHopper())
+        {
+            if (arm.hopper.isClosed())
+            {
+                arm.hopper.open();
+            }
+            else
+            {
+                arm.hopper.close();
+            }
+        }
+
+        if (mechOperator.dumpHopper())
+        {
+            arm.hopper.dump();
+        }
+
+        if (mechOperator.runIntake())
+        {
+            arm.intake.run();
+        }
+
+        if (mechOperator.toggleDeployIntake())
+        {
+            if (arm.intake.isDeployed())
+            {
+                arm.intake.undeploy();
+            }
+            else
+            {
+                arm.intake.deploy();
+            }
+        }
     }
 
     /*

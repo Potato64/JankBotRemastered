@@ -2,17 +2,15 @@ package org.firstinspires.ftc.teamcode;
 
 public interface MechOperator
 {
-    double heightArm();
+    int liftPosition();
 
-    double heightExtend();
+    int extendPosition();
 
-    boolean closeHopper();
+    boolean toggleStateHopper();
 
     boolean dumpHopper();
 
     boolean runIntake();
 
     boolean toggleDeployIntake();
-
-    boolean climb();
 }

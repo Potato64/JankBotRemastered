@@ -33,10 +33,15 @@ public class Hopper
         right.setPosition(0);
     }
 
-    public void closed()
+    public void close()
     {
         left.setPosition(1);
         right.setPosition(1);
+    }
+
+    public boolean isClosed()
+    {
+        return left.getPosition() > 0.5;
     }
 
     public void dump()

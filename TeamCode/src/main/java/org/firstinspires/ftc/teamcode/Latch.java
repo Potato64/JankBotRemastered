@@ -10,7 +10,8 @@ public class Latch {
     private final double openLimit = 0;
     private final double closedLimit = 0.5;
 
-    private final int unwoundTicks = 5000;
+    private final int WOUND_TICKS = 0;
+    private final int UNWOUND_TICKS = 5000;
 
     private Servo release;
 
@@ -27,7 +28,7 @@ public class Latch {
 
     public void release()
     {
-        winch.setTargetPosition(unwoundTicks);
+        winch.setTargetPosition(UNWOUND_TICKS);
         winch.setPower(0.5);
 
         try
@@ -48,10 +49,16 @@ public class Latch {
     public void unrelease()
     {
         release.setPosition(1);
-    }
 
-    public void climb()
-    {
-        winch.setTargetPosition(0);
+        try
+        {
+            sleep(500);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+
+        winch.setTargetPosition(WOUND_TICKS);
     }
 }
