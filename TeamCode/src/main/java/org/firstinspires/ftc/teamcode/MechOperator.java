@@ -6,8 +6,6 @@ public interface MechOperator
 
     int extendPosition();
 
-    boolean toggleStateHopper();
-
     boolean dumpHopper();
 
     boolean runIntake();

@@ -14,18 +14,12 @@ public class MechAidan implements MechOperator
 
     Gamepad gamepad;
 
-    private boolean aTracker;
-    private boolean isHopperClosed;
-
     private boolean yTracker;
     private boolean isIntakeDeployed;
 
     public MechAidan(Gamepad gamepad)
     {
         this.gamepad = gamepad;
-
-        aTracker = false;
-        isHopperClosed = false;
 
         yTracker = false;
         isIntakeDeployed = true;
@@ -41,19 +35,6 @@ public class MechAidan implements MechOperator
     public int extendPosition()
     {
         return (int)(-gamepad.left_stick_y * EXTEND_UPPER_LIMIT);
-    }
-
-    @Override
-    public boolean toggleStateHopper()
-    {
-        if (gamepad.a && !aTracker)
-        {
-            isHopperClosed = !isHopperClosed;
-        }
-
-        aTracker = gamepad.a;
-
-        return isHopperClosed;
     }
 
     @Override
