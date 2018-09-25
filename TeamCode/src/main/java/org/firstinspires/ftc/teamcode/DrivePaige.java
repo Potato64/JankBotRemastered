@@ -2,11 +2,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-public class DriveGage implements DriveOperator
+public class DrivePaige implements DriveOperator
 {
     private Gamepad gamepad;
 
-    public DriveGage(Gamepad gamepad)
+    public DrivePaige(Gamepad gamepad)
     {
         this.gamepad = gamepad;
     }
@@ -26,6 +26,6 @@ public class DriveGage implements DriveOperator
     @Override
     public boolean climb()
     {
-        return gamepad.a;
+        return gamepad.b;
     }
 }
