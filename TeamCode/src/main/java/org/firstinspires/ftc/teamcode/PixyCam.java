@@ -7,7 +7,7 @@ public class PixyCam
 {
     private I2cDeviceSynch pixy;
 
-    private Block[] blockList;
+    public Block[] blockList;
 
     private int blockIndex;
 
@@ -37,7 +37,6 @@ public class PixyCam
 
         while (blockIndex > 0)
         {
-
             getObject();
         }
     }
@@ -123,6 +122,12 @@ public class PixyCam
             this.y = y;
             this.width = width;
             this.height = height;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "Signature: " + signature + "\nX: " + x + "\nY: " + width + "\nHeight: " + height;
         }
     }
 }

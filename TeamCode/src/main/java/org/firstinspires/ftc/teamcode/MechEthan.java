@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-public class MechAidan implements MechOperator
+public class MechEthan implements MechOperator
 {
     //TODO find actual limits
     private final int LIFT_LOWER_LIMIT = 0;
@@ -12,12 +12,12 @@ public class MechAidan implements MechOperator
     private final int EXTEND_LOWER_LIMIT = 0;
     private final int EXTEND_UPPER_LIMIT = 1000;
 
-    Gamepad gamepad;
+    private Gamepad gamepad;
 
     private boolean yTracker;
     private boolean isIntakeDeployed;
 
-    public MechAidan(Gamepad gamepad)
+    public MechEthan(Gamepad gamepad)
     {
         this.gamepad = gamepad;
 
@@ -28,31 +28,24 @@ public class MechAidan implements MechOperator
     @Override
     public int liftPosition()
     {
-        return (int)(gamepad.left_trigger * LIFT_UPPER_LIMIT);
+        return (int)(-gamepad.left_stick_y * LIFT_UPPER_LIMIT);
     }
 
     @Override
     public int extendPosition()
     {
-        return (int)(-gamepad.left_stick_y * EXTEND_UPPER_LIMIT);
+        return (int)(-gamepad.right_stick_y * LIFT_UPPER_LIMIT);
     }
 
     @Override
     public boolean runIntake()
     {
-        return gamepad.y;
+        return gamepad.b;
     }
 
     @Override
     public boolean toggleDeployIntake()
     {
-        if (gamepad.y && !yTracker)
-        {
-            isIntakeDeployed = !isIntakeDeployed;
-        }
-
-        yTracker = gamepad.y;
-
-        return isIntakeDeployed;
+        return gamepad.x;
     }
 }

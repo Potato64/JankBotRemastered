@@ -85,23 +85,6 @@ public class JankBot_TeleOP extends OpMode
         arm.setLiftPosition(mechOperator.liftPosition());
         arm.setExtendPostion(mechOperator.extendPosition());
 
-        if (mechOperator.toggleStateHopper())
-        {
-            if (arm.hopper.isClosed())
-            {
-                arm.hopper.open();
-            }
-            else
-            {
-                arm.hopper.close();
-            }
-        }
-
-        if (mechOperator.dumpHopper())
-        {
-            arm.hopper.dump();
-        }
-
         if (mechOperator.runIntake())
         {
             arm.intake.run();
